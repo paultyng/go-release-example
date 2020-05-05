@@ -5,7 +5,12 @@ import (
 	"os"
 )
 
-var version string = "dev"
+var (
+	version string = `¯\_(ツ)_/¯`
+	commit  string = `¯\_(ツ)_/¯`
+	date    string = `¯\_(ツ)_/¯`
+	builtBy string = `¯\_(ツ)_/¯`
+)
 
 func main() {
 	err := run(os.Args)
@@ -16,6 +21,6 @@ func main() {
 }
 
 func run(args []string) error {
-	fmt.Printf("I am running the %s version!\n", version)
+	fmt.Printf("I am running go-release-example!\n\nVersion:\t%s\nCommit:\t\t%s\nDate:\t\t%s\nBuilt By:\t%s\n", version, commit, date, builtBy)
 	return nil
 }

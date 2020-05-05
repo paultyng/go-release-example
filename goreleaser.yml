@@ -1,14 +1,28 @@
 # Visit https://goreleaser.com for documentation on how to customize this
 # behavior.
 
-before:
-  hooks:
-    - go mod tidy
+# Template Fields Reference: https://goreleaser.com/customization/#Name%20Templates
+
+# before:
+#   hooks:
+#     - go generate ./...
+#     - go mod tidy
+
 builds:
-- env:
+- 
+  # Custom environment variables to be set during the builds.
+  # Default is empty.
+  env:
   - CGO_ENABLED=0
-  ldflags:
-  - -X main.version={{.Version}}
+
+  # Custom ldflags templates.
+  # Default is `-s -w -X main.version={{.Version}} -X main.commit={{.Commit}} -X main.date={{.Date}} -X main.builtBy=goreleaser`.
+  # ldflags:
+  # - -X main.version={{.Version}}
+
+  # GOOS list to build for.
+  # For more info refer to: https://golang.org/doc/install/source#environment
+  # Defaults are darwin and linux.
   goos:
     # - freebsd
     # - openbsd
@@ -16,11 +30,25 @@ builds:
     - windows
     - linux
     - darwin
+
+  # GOARCH to build for.
+  # For more info refer to: https://golang.org/doc/install/source#environment
+  # Defaults are 386 and amd64.
   goarch:
     - amd64
     - '386'
     - arm
     - arm64
+
+  # GOARM to build for when GOARCH is arm.
+  # For more info refer to: https://golang.org/doc/install/source#environment
+  # Default is only 6.
+  goarm:
+    - 6
+    - 7
+
+  # List of combinations of GOOS + GOARCH + GOARM to ignore.
+  # Default is empty.
   ignore:
     - goos: darwin
       goarch: '386'
@@ -38,12 +66,46 @@ builds:
     #   goarch: arm64
     # - goos: solaris
     #   goarch: '386'
+
 archives:
-- format: zip
+- 
+  # Archive format. Valid options are `tar.gz`, `tar.xz`, `gz`, `zip` and `binary`.
+  # If format is `binary`, no archives are created and the binaries are instead
+  # uploaded directly.
+  # Default is `tar.gz`.
+  format: zip
+
+  # Can be used to change the archive formats for specific GOOSs.
+  # Most common use case is to archive as zip on Windows.
+  # Default is empty.
+  # format_overrides:
+  #   - goos: windows
+  #     format: zip
+  
+  # Archive name template.
+  # Defaults:
+  # - if format is `tar.gz`, `tar.xz`, `gz` or `zip`:
+  #   - `{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}{{ if .Mips }}_{{ .Mips }}{{ end }}`
+  # - if format is `binary`:
+  #   - `{{ .Binary }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}{{ if .Mips }}_{{ .Mips }}{{ end }}`
   name_template: '{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}'
+
+  # Additional files/template/globs you want to add to the archive.
+  # Defaults are any files matching `LICENCE*`, `LICENSE*`,
+  # `README*` and `CHANGELOG*` (case-insensitive).
+  files:
+    - LICENSE
+
 checksum:
+  # You can change the name of the checksums file.
+  # Default is `{{ .ProjectName }}_{{ .Version }}_checksums.txt`.
   name_template: '{{ .ProjectName }}_{{ .Version }}_SHA256SUMS'
+
+  # Algorithm to be used.
+  # Accepted options are sha256, sha512, sha1, crc32, md5, sha224 and sha384.
+  # Default is sha256.
   algorithm: sha256
+
 # signs:
 #   - artifacts: checksum
 #     args:
@@ -53,8 +115,19 @@ checksum:
 #       - "${signature}"
 #       - "--detach-sign"
 #       - "${artifact}"
+
 release:
-  # Visit your project's GitHub Releases page to publish this release.
+  # Repo in which the release will be created.
+  # Default is extracted from the origin remote URL or empty if its private hosted.
+  # Note: it can only be one: either github or gitlab or gitea
+  # github:
+  #   owner: user
+  #   name: repo
+
+  # If set to true, will not auto-publish the release.
+  # Default is false.
   draft: true
-# changelog:
-#   skip: true
+
+  # You can change the name of the GitHub release.
+  # Default is `{{.Tag}}`
+  name_template: "{{.ProjectName}}-v{{.Version}} {{.Env.USER}}"
