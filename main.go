@@ -21,7 +21,7 @@ func main() {
 }
 
 func run(args []string) error {
-	fmt.Println("Hey!")
+	fmt.Println("Hey! You!")
 	fmt.Printf("I am running go-release-example!\n\nVersion:\t%s\nCommit:\t\t%s\nDate:\t\t%s\nBuilt By:\t%s\n", version, commit, date, builtBy)
 	return nil
 }
